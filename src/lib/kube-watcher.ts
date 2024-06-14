@@ -10,6 +10,7 @@ import {
   getCnpgClusterArchivingStatus,
 } from "@/lib/kube/types"
 import { logger } from "@/lib/logger"
+import { sendNotification } from "@/lib/mattermost"
 
 const allContexts = ["dev", "prod", "ovh-dev", "ovh-prod"]
 
@@ -176,13 +177,19 @@ function checkCnpgCluster(
   const cacheKey = JSON.stringify(status)
   const alertInCache = alertCache.has(cacheKey)
 
+  const mattermostFields = Object.entries(status).map(([key, value]) => {
+    return { title: key, value: String(value) }
+  })
+
   if (statusOk && !alertInCache) {
     return
   } else if (statusOk && alertInCache) {
     logger.info(status, "cnpgCluster alert resolved")
+    sendNotification(statusOk, "cnpgCluster alert resolved", mattermostFields)
     alertCache.delete(cacheKey)
   } else if (!statusOk && !alertInCache) {
     logger.error(status, "cnpgCluster alert")
+    sendNotification(statusOk, "cnpgCluster alert", mattermostFields)
     alertCache.set(cacheKey, true)
   }
 

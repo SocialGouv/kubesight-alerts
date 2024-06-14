@@ -12,7 +12,7 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc && tsc-alias",
-    "dev": "FORCE_COLOR=true tsx watch src/**/*.ts | pino-pretty",
+    "dev": "FORCE_COLOR=true tsx watch --env-file=.env src/**/*.ts | pino-pretty",
     "lint": "eslint src/**/*.ts && prettier --check src/**/*.ts",
     "format": "prettier --write src/**/*.ts",
     "postinstall": "is-ci || husky install",
